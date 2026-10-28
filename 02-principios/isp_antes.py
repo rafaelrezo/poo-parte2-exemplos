@@ -1,47 +1,64 @@
 from abc import ABC, abstractmethod
 
 
-class DispositivoIndustrial(ABC):
+class Dispositivo(ABC):
     @abstractmethod
-    def ler_temperatura(self):
-        """Temperatura em °C."""
-
-    @abstractmethod
-    def acionar_motor(self, ligado):
-        """Liga ou desliga o motor do dispositivo."""
+    def ler(self):
+        """Devolve a medição do equipamento."""
 
     @abstractmethod
-    def enviar_notificacao(self, mensagem):
-        """Avisa o operador."""
+    def ligar(self):
+        """Liga o equipamento."""
+
+    @abstractmethod
+    def desligar(self):
+        """Desliga o equipamento."""
 
 
-class SensorPT100(DispositivoIndustrial):
-    def ler_temperatura(self):
-        return 72.0
+class SensorTemperatura(Dispositivo):
+    def ler(self):
+        return 25.5
 
-    def acionar_motor(self, ligado):
-        raise NotImplementedError("um sensor não tem motor")
+    def ligar(self):
+        raise NotImplementedError("sensor não possui acionamento")
 
-    def enviar_notificacao(self, mensagem):
-        raise NotImplementedError("um sensor não envia mensagens")
-
-
-def exibir_temperatura(dispositivo):
-    print(f"temperatura: {dispositivo.ler_temperatura()} °C")
+    def desligar(self):
+        raise NotImplementedError("sensor não possui acionamento")
 
 
-def desligar_todos(dispositivos):
+class Motor(Dispositivo):
+    def ler(self):
+        raise NotImplementedError("motor não possui leitura")
+
+    def ligar(self):
+        print("motor ligado")
+
+    def desligar(self):
+        print("motor desligado")
+
+
+class CLP(Dispositivo):
+    def ler(self):
+        return 50.0
+
+    def ligar(self):
+        print("CLP: saída ligada")
+
+    def desligar(self):
+        print("CLP: saída desligada")
+
+
+def coletar_medicoes(dispositivos):
     for dispositivo in dispositivos:
-        dispositivo.acionar_motor(False)
+        print(f"{type(dispositivo).__name__}: {dispositivo.ler()}")
 
 
 def main():
-    sensor = SensorPT100()
-    exibir_temperatura(sensor)
+    dispositivos = [SensorTemperatura(), CLP(), Motor()]
     try:
-        desligar_todos([sensor])
+        coletar_medicoes(dispositivos)
     except NotImplementedError as erro:
-        print(f"falha ao desligar: {erro}")
+        print(f"falhou: {erro}")
 
 
 if __name__ == "__main__":
