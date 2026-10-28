@@ -29,7 +29,7 @@ def area_total(formas):
 
 
 def main():
-    formas = [Retangulo(5, 4), Quadrado(4)]
+    formas = [Retangulo(2, 3), Quadrado(3)]
     for forma in formas:
         print(f"{type(forma).__name__:9} área {forma.area()}")
     print(f"área total: {area_total(formas)}")

@@ -1,41 +1,33 @@
 class Retangulo:
     def __init__(self, largura, altura):
-        self._largura = largura
-        self._altura = altura
+        self.largura = largura
+        self.altura = altura
 
-    def definir_largura(self, largura):
-        self._largura = largura
-
-    def definir_altura(self, altura):
-        self._altura = altura
+    def mudar_largura(self, largura):
+        self.largura = largura
 
     def area(self):
-        return self._largura * self._altura
+        return self.largura * self.altura
 
 
 class Quadrado(Retangulo):
     def __init__(self, lado):
         super().__init__(lado, lado)
 
-    def definir_largura(self, largura):
-        self._largura = largura
-        self._altura = largura  # mantém os lados iguais
-
-    def definir_altura(self, altura):
-        self._largura = altura
-        self._altura = altura
+    def mudar_largura(self, largura):
+        self.largura = largura
+        self.altura = largura  # num quadrado, os lados continuam iguais
 
 
-def preparar_etiqueta(retangulo):
-    """Espera um retângulo de 5 x 4, com área 20."""
-    retangulo.definir_largura(5)
-    retangulo.definir_altura(4)
-    return retangulo.area()
+def dobrar_largura(figura):
+    antes = figura.area()
+    figura.mudar_largura(figura.largura * 2)
+    print(f"{type(figura).__name__:9} área {antes} -> {figura.area()}")
 
 
 def main():
-    for forma in (Retangulo(1, 1), Quadrado(1)):
-        print(f"{type(forma).__name__:9} área esperada 20, obtida {preparar_etiqueta(forma)}")
+    dobrar_largura(Retangulo(2, 3))
+    dobrar_largura(Quadrado(3))
 
 
 if __name__ == "__main__":
