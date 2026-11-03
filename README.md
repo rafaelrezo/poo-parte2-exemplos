@@ -2,8 +2,8 @@
 
 Demonstrações independentes das aulas. Não substituem arquivos do starter
 poo-planta-controle e não implementam o trabalho completo nem suas extensões.
-A aula 03 traz um recorte do projeto público poo-estacionamento-hexagonal,
-que mostra núcleo, portas, adaptadores e montagem num domínio neutro.
+A pasta consulta-arquitetura acompanha a leitura opcional sobre arquitetura
+hexagonal: um recorte do projeto público poo-estacionamento-hexagonal.
 
 Para obter os programas e acompanhar atualizações:
 
@@ -35,5 +35,10 @@ na pasta 08-repository: python3 -m streamlit run painel.py.
 A demonstração repository.py usa banco temporário e não deixa um banco na pasta.
 O teste test_painel.py prepara seus próprios dados e verifica a tela.
 
+Na pasta 03-processos, os programas trocam dados por arquivos de texto
+(nivel.txt, comando.txt, estado_bomba.txt) criados na própria pasta. A ordem de
+execução e as saídas esperadas estão na aula 03.
+
 A consulta TCP demonstra enquadramento por bytes, sem conexão ou servidor.
-Os programas que escrevem em disco usam diretórios temporários na demonstração.
+Fora da pasta 03-processos, os programas que escrevem em disco usam diretórios
+temporários na demonstração.

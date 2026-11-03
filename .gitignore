@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 *.db
+03-processos/*.txt
+03-processos/controle_nivel
+03-processos/cliente_bomba
