@@ -42,3 +42,6 @@ execução e as saídas esperadas estão na aula 03.
 A consulta TCP demonstra enquadramento por bytes, sem conexão ou servidor.
 Fora da pasta 03-processos, os programas que escrevem em disco usam diretórios
 temporários na demonstração.
+
+Na pasta 04-contrato, idade.py e publicar.py importam contrato.py da mesma
+pasta. contrato.py também aceita um caminho: python3 contrato.py dados/planta.json.
