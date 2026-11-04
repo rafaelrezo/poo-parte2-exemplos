@@ -18,7 +18,9 @@ g++ -std=c++17 -Wall -Wextra -Werror -pedantic NOME.cpp -o exemplo
 
 Para Python: python3 NOME.py. Não use -DNDEBUG em C++ nem -O em Python nas
 primeiras demonstrações, que utilizam assert. Os programas de console usam
-somente a biblioteca padrão. Os comandos e as saídas comentadas estão nas aulas.
+a biblioteca padrão; a exceção são os programas C++ da pasta 04-contrato que
+leem ou escrevem JSON, que usam nlohmann/json. Os comandos e as saídas
+comentadas estão nas aulas.
 
 A pasta 09-testes já contém as dependências das aulas 04 e 08. Nessa pasta:
 
@@ -43,5 +45,15 @@ A consulta TCP demonstra enquadramento por bytes, sem conexão ou servidor.
 Fora da pasta 03-processos, os programas que escrevem em disco usam diretórios
 temporários na demonstração.
 
-Na pasta 04-contrato, idade.py e publicar.py importam contrato.py da mesma
-pasta. contrato.py também aceita um caminho: python3 contrato.py dados/planta.json.
+Na pasta 04-contrato, os programas Python importam contrato.py e publicar.py
+da mesma pasta. contrato.py também aceita um caminho:
+python3 contrato.py aquisicao.json. Os programas C++ com JSON usam a biblioteca
+nlohmann/json 3.11.3 (licença MIT), incluída em include/nlohmann:
+
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I ../include consumidor_nivel.cpp -o consumidor_nivel
+
+Para o modelo, o consumidor e o painel em execução (dois terminais, na pasta
+04-contrato, com o ambiente virtual ativado):
+
+python3 modelo_nivel.py --ciclos 120 --intervalo 1
+streamlit run painel_nivel.py
