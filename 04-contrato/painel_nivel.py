@@ -17,7 +17,7 @@ def registrar(historico: list, aquisicao) -> None:
         if (ultima["sessao"], ultima["ciclo"]) == (aquisicao.sessao, aquisicao.ciclo):
             return  # mesmo snapshot lido de novo
         if ultima["sessao"] != aquisicao.sessao:
-            historico.clear()  # o modelo reiniciou: começa outro gráfico
+            historico.clear()  # o dispositivo reiniciou: começa outro gráfico
     historico.append({"sessao": aquisicao.sessao, "ciclo": aquisicao.ciclo,
                       "instante": aquisicao.instante, "nivel": aquisicao.nivel})
 
@@ -28,7 +28,7 @@ def painel() -> None:
     try:
         registrar(historico, interpretar(CAMINHO.read_text(encoding="utf-8")))
     except FileNotFoundError:
-        st.info(f"Aguardando {CAMINHO}: inicie o modelo.")
+        st.info(f"Aguardando {CAMINHO}: inicie o dispositivo.")
     except ValueError as erro:
         st.error(f"Aquisição recusada: {erro}")  # o histórico anterior continua
     if not historico:
@@ -40,15 +40,16 @@ def painel() -> None:
     coluna_nivel.metric("Nível LT-01", f"{ultima['nivel']:.1f} %")
     coluna_idade.metric("Idade do dado", f"{idade:.0f} s")
     if idade > LIMITE_OBSOLESCENCIA_S:
-        st.warning("Dado obsoleto: o modelo parou de publicar?")
+        st.warning("Dado obsoleto: o dispositivo parou de publicar?")
 
     st.line_chart(
         {"hora (Brasília)": [item["instante"].astimezone(BRASILIA).replace(tzinfo=None)
                              for item in historico],
          "nível (%)": [item["nivel"] for item in historico]},
         x="hora (Brasília)", y="nível (%)")
+    nao_vistos = ultima["ciclo"] - historico[0]["ciclo"] + 1 - len(historico)
     st.caption(f"sessão {ultima['sessao']} · ciclo {ultima['ciclo']} · "
-               f"{len(historico)} aquisições vistas")
+               f"{len(historico)} aquisições vistas · {nao_vistos} ciclos não vistos")
 
 
 def main() -> None:

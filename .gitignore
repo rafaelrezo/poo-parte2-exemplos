@@ -10,5 +10,4 @@ __pycache__/
 04-contrato/json_basico
 04-contrato/timestamp
 04-contrato/contrato
-04-contrato/consumidor_nivel
-04-contrato/modelo_nivel
+04-contrato/dispositivo_nivel

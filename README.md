@@ -50,10 +50,11 @@ da mesma pasta. contrato.py também aceita um caminho:
 python3 contrato.py aquisicao.json. Os programas C++ com JSON usam a biblioteca
 nlohmann/json 3.11.3 (licença MIT), incluída em include/nlohmann:
 
-g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I ../include consumidor_nivel.cpp -o consumidor_nivel
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I ../include dispositivo_nivel.cpp -o dispositivo_nivel
 
-Para o modelo, o consumidor e o painel em execução (dois terminais, na pasta
-04-contrato, com o ambiente virtual ativado):
+Dois processos trocam dados por aquisicao.json: o dispositivo C++ escreve e o
+painel Streamlit lê. Em dois terminais, na pasta 04-contrato (o painel com o
+ambiente virtual ativado):
 
-python3 modelo_nivel.py --ciclos 120 --intervalo 1
+./dispositivo_nivel 300 1000
 streamlit run painel_nivel.py
