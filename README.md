@@ -18,9 +18,9 @@ g++ -std=c++17 -Wall -Wextra -Werror -pedantic NOME.cpp -o exemplo
 
 Para Python: python3 NOME.py. Não use -DNDEBUG em C++ nem -O em Python nas
 primeiras demonstrações, que utilizam assert. Os programas de console usam
-a biblioteca padrão; a exceção são os programas C++ da pasta 04-contrato que
-leem ou escrevem JSON, que usam nlohmann/json. Os comandos e as saídas
-comentadas estão nas aulas.
+a biblioteca padrão; a exceção são os programas C++ da pasta
+04-dispositivo-painel que escrevem JSON, que usam nlohmann/json. Os comandos e
+as saídas comentadas estão nas aulas.
 
 A pasta 09-testes já contém as dependências das aulas 04 e 08. Nessa pasta:
 
@@ -45,16 +45,16 @@ A consulta TCP demonstra enquadramento por bytes, sem conexão ou servidor.
 Fora da pasta 03-processos, os programas que escrevem em disco usam diretórios
 temporários na demonstração.
 
-Na pasta 04-contrato, os programas Python importam contrato.py e publicar.py
-da mesma pasta. contrato.py também aceita um caminho:
-python3 contrato.py aquisicao.json. Os programas C++ com JSON usam a biblioteca
-nlohmann/json 3.11.3 (licença MIT), incluída em include/nlohmann:
+A pasta 04-dispositivo-painel acompanha o guia prático da aula 04. Cada
+subpasta passo-N contém o estado do projeto ao final daquele passo, para
+comparação; o estudante constrói o projeto na própria pasta. Os programas C++
+com JSON usam nlohmann/json 3.11.3 (licença MIT), incluída em include/nlohmann.
+Dentro de uma subpasta passo-N:
 
-g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I ../include dispositivo_nivel.cpp -o dispositivo_nivel
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I ../../include dispositivo.cpp -o dispositivo
 
-Dois processos trocam dados por aquisicao.json: o dispositivo C++ escreve e o
-painel Streamlit lê. Em dois terminais, na pasta 04-contrato (o painel com o
-ambiente virtual ativado):
+No passo 7, dois processos trocam serie_nivel.json (o painel com o ambiente
+virtual ativado):
 
-./dispositivo_nivel 300 1000
-streamlit run painel_nivel.py
+./dispositivo 300 1000
+streamlit run painel.py

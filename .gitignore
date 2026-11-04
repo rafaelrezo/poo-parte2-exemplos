@@ -5,9 +5,7 @@ __pycache__/
 03-processos/controle_nivel
 03-processos/cliente_bomba
 .venv/
-04-contrato/aquisicao.json
-04-contrato/*.tmp
-04-contrato/json_basico
-04-contrato/timestamp
-04-contrato/contrato
-04-contrato/dispositivo_nivel
+04-dispositivo-painel/*/sorteio
+04-dispositivo-painel/*/dispositivo
+04-dispositivo-painel/*/serie_nivel.json
+04-dispositivo-painel/*/serie_nivel.json.tmp
