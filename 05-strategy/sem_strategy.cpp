@@ -1,63 +1,51 @@
-#include <algorithm>
 #include <cstdio>
-#include <deque>
 #include <stdexcept>
-#include <vector>
 
-enum class ModoFiltro { UltimoValor, MediaMovel, Mediana };
+enum class TipoFrete { Retirada, PorPeso, PorFaixa };
 
-class CanalNivel {
+class Pedido {
 public:
-    CanalNivel(ModoFiltro modo, std::size_t janela) : modo_(modo), janela_(janela) {
-        if (janela_ == 0) {
-            throw std::invalid_argument("a janela precisa ter ao menos uma leitura");
+    Pedido(double produtos, double peso_kg, TipoFrete tipo)
+        : produtos_(produtos), peso_kg_(peso_kg), tipo_(tipo) {
+        if (produtos_ < 0.0 || peso_kg_ <= 0.0) {
+            throw std::invalid_argument("pedido com valor ou peso inválido");
         }
     }
 
-    double receber(double bruto) {
-        if (bruto < 0.0 || bruto > 100.0) {
-            throw std::out_of_range("nível fora de 0 a 100 %");
+    double frete() const {
+        if (tipo_ == TipoFrete::Retirada) {
+            return 0.0;
         }
-        if (modo_ == ModoFiltro::UltimoValor) {
-            return bruto;
+        if (tipo_ == TipoFrete::PorPeso) {
+            return 8.0 + 4.0 * peso_kg_;
         }
-        recentes_.push_back(bruto);
-        if (recentes_.size() > janela_) {
-            recentes_.pop_front();
+        // TipoFrete::PorFaixa
+        if (peso_kg_ <= 1.0) {
+            return 15.0;
         }
-        if (modo_ == ModoFiltro::MediaMovel) {
-            double soma = 0.0;
-            for (double valor : recentes_) {
-                soma += valor;
-            }
-            return soma / recentes_.size();
+        if (peso_kg_ <= 5.0) {
+            return 25.0;
         }
-        // ModoFiltro::Mediana: acrescentado depois, dentro do mesmo método
-        std::vector<double> ordenados(recentes_.begin(), recentes_.end());
-        std::sort(ordenados.begin(), ordenados.end());
-        const std::size_t meio = ordenados.size() / 2;
-        if (ordenados.size() % 2 == 0) {
-            return (ordenados[meio - 1] + ordenados[meio]) / 2.0;
-        }
-        return ordenados[meio];
+        return 35.0;
     }
+
+    double total() const { return produtos_ + frete(); }
 
 private:
-    ModoFiltro modo_;
-    std::size_t janela_;            // ignorada no modo UltimoValor
-    std::deque<double> recentes_;   // vazia no modo UltimoValor
+    double produtos_;
+    double peso_kg_;
+    TipoFrete tipo_;
 };
 
 int main() {
-    const std::vector<double> leituras{48.0, 48.6, 47.8, 48.4, 93.0, 48.2, 47.6, 48.0};
-
-    CanalNivel ultimo{ModoFiltro::UltimoValor, 1};
-    CanalNivel media{ModoFiltro::MediaMovel, 3};
-    CanalNivel mediana{ModoFiltro::Mediana, 3};
-
-    std::printf("bruto  ultimo  media3  mediana3\n");
-    for (double bruto : leituras) {
-        std::printf("%5.1f  %6.1f  %6.1f  %8.1f\n", bruto, ultimo.receber(bruto),
-                    media.receber(bruto), mediana.receber(bruto));
+    std::printf("peso  retirada  por_peso  por_faixa\n");
+    for (double peso : {0.5, 3.0, 8.0}) {
+        Pedido retirada{100.0, peso, TipoFrete::Retirada};
+        Pedido por_peso{100.0, peso, TipoFrete::PorPeso};
+        Pedido por_faixa{100.0, peso, TipoFrete::PorFaixa};
+        std::printf("%4.1f  %8.2f  %8.2f  %9.2f\n", peso, retirada.frete(),
+                    por_peso.frete(), por_faixa.frete());
     }
+    Pedido exemplo{100.0, 3.0, TipoFrete::PorPeso};
+    std::printf("total de um pedido de 100.00 com 3 kg, por peso: %.2f\n", exemplo.total());
 }

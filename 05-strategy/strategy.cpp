@@ -1,121 +1,82 @@
-#include <algorithm>
 #include <cstdio>
-#include <deque>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <vector>
 
-// Estratégia: o contrato comum a todos os filtros
-class FiltroSinal {
+// Estratégia: o contrato comum a todas as modalidades de frete
+class Frete {
 public:
-    virtual ~FiltroSinal() = default;
-    virtual double filtrar(double bruto) = 0;
+    virtual ~Frete() = default;
+    virtual double calcular(double peso_kg) const = 0;
 };
 
-// Estratégias concretas: cada uma guarda só o que o seu algoritmo usa
-class UltimoValor : public FiltroSinal {
+// Estratégias concretas: uma classe por algoritmo
+class Retirada : public Frete {
 public:
-    double filtrar(double bruto) override { return bruto; }
+    double calcular(double) const override { return 0.0; }
 };
 
-class MediaMovel : public FiltroSinal {
+class PorPeso : public Frete {
 public:
-    explicit MediaMovel(std::size_t janela) : janela_(janela) {
-        if (janela_ == 0) {
-            throw std::invalid_argument("a janela precisa ter ao menos uma leitura");
+    double calcular(double peso_kg) const override { return 8.0 + 4.0 * peso_kg; }
+};
+
+class PorFaixa : public Frete {
+public:
+    double calcular(double peso_kg) const override {
+        if (peso_kg <= 1.0) {
+            return 15.0;
+        }
+        if (peso_kg <= 5.0) {
+            return 25.0;
+        }
+        return 35.0;
+    }
+};
+
+// Contexto: cuida do pedido e delega o cálculo do frete
+class Pedido {
+public:
+    Pedido(double produtos, double peso_kg, std::unique_ptr<Frete> frete)
+        : produtos_(produtos), peso_kg_(peso_kg), frete_(std::move(frete)) {
+        if (produtos_ < 0.0 || peso_kg_ <= 0.0 || !frete_) {
+            throw std::invalid_argument("pedido com valor, peso ou frete inválido");
         }
     }
 
-    double filtrar(double bruto) override {
-        recentes_.push_back(bruto);
-        if (recentes_.size() > janela_) {
-            recentes_.pop_front();
-        }
-        double soma = 0.0;
-        for (double valor : recentes_) {
-            soma += valor;
-        }
-        return soma / recentes_.size();
-    }
+    double frete() const { return frete_->calcular(peso_kg_); }
+    double total() const { return produtos_ + frete(); }
 
 private:
-    std::size_t janela_;
-    std::deque<double> recentes_;
+    double produtos_;
+    double peso_kg_;
+    std::unique_ptr<Frete> frete_;
 };
 
-class Mediana : public FiltroSinal {
-public:
-    explicit Mediana(std::size_t janela) : janela_(janela) {
-        if (janela_ == 0) {
-            throw std::invalid_argument("a janela precisa ter ao menos uma leitura");
-        }
+// Montagem: o único lugar que conhece as modalidades concretas
+std::unique_ptr<Frete> criar_frete(const std::string& nome) {
+    if (nome == "retirada") {
+        return std::make_unique<Retirada>();
     }
-
-    double filtrar(double bruto) override {
-        recentes_.push_back(bruto);
-        if (recentes_.size() > janela_) {
-            recentes_.pop_front();
-        }
-        std::vector<double> ordenados(recentes_.begin(), recentes_.end());
-        std::sort(ordenados.begin(), ordenados.end());
-        const std::size_t meio = ordenados.size() / 2;
-        if (ordenados.size() % 2 == 0) {
-            return (ordenados[meio - 1] + ordenados[meio]) / 2.0;
-        }
-        return ordenados[meio];
+    if (nome == "por_peso") {
+        return std::make_unique<PorPeso>();
     }
-
-private:
-    std::size_t janela_;
-    std::deque<double> recentes_;
-};
-
-// Contexto: valida a leitura e delega o tratamento do sinal
-class CanalNivel {
-public:
-    explicit CanalNivel(std::unique_ptr<FiltroSinal> filtro) : filtro_(std::move(filtro)) {
-        if (!filtro_) {
-            throw std::invalid_argument("o canal precisa de um filtro");
-        }
+    if (nome == "por_faixa") {
+        return std::make_unique<PorFaixa>();
     }
-
-    double receber(double bruto) {
-        if (bruto < 0.0 || bruto > 100.0) {
-            throw std::out_of_range("nível fora de 0 a 100 %");
-        }
-        return filtro_->filtrar(bruto);
-    }
-
-private:
-    std::unique_ptr<FiltroSinal> filtro_;
-};
-
-// Montagem: o único lugar que conhece os filtros concretos
-std::unique_ptr<FiltroSinal> criar_filtro(const std::string& nome) {
-    if (nome == "ultimo") {
-        return std::make_unique<UltimoValor>();
-    }
-    if (nome == "media3") {
-        return std::make_unique<MediaMovel>(3);
-    }
-    if (nome == "mediana3") {
-        return std::make_unique<Mediana>(3);
-    }
-    throw std::invalid_argument("filtro desconhecido: " + nome);
+    throw std::invalid_argument("modalidade de frete desconhecida: " + nome);
 }
 
 int main() {
-    const std::vector<double> leituras{48.0, 48.6, 47.8, 48.4, 93.0, 48.2, 47.6, 48.0};
-
-    CanalNivel ultimo{criar_filtro("ultimo")};
-    CanalNivel media{criar_filtro("media3")};
-    CanalNivel mediana{criar_filtro("mediana3")};
-
-    std::printf("bruto  ultimo  media3  mediana3\n");
-    for (double bruto : leituras) {
-        std::printf("%5.1f  %6.1f  %6.1f  %8.1f\n", bruto, ultimo.receber(bruto),
-                    media.receber(bruto), mediana.receber(bruto));
+    std::printf("peso  retirada  por_peso  por_faixa\n");
+    for (double peso : {0.5, 3.0, 8.0}) {
+        Pedido retirada{100.0, peso, criar_frete("retirada")};
+        Pedido por_peso{100.0, peso, criar_frete("por_peso")};
+        Pedido por_faixa{100.0, peso, criar_frete("por_faixa")};
+        std::printf("%4.1f  %8.2f  %8.2f  %9.2f\n", peso, retirada.frete(),
+                    por_peso.frete(), por_faixa.frete());
     }
+    Pedido exemplo{100.0, 3.0, criar_frete("por_peso")};
+    std::printf("total de um pedido de 100.00 com 3 kg, por peso: %.2f\n", exemplo.total());
 }
