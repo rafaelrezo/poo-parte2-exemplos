@@ -9,7 +9,9 @@ public:
 
 class NivelAlto : public PoliticaAlarme {
 public:
-    bool aciona(double nivel) const override { return nivel > 80; }
+    bool aciona(double nivel) const override {
+        return nivel > 80;
+    }
 };
 
 class ForaDaFaixa : public PoliticaAlarme {
@@ -23,7 +25,9 @@ class Monitor {
     const PoliticaAlarme& politica_;
 public:
     explicit Monitor(const PoliticaAlarme& politica) : politica_(politica) {}
-    bool avaliar(double nivel) const { return politica_.aciona(nivel); }
+    bool avaliar(double nivel) const {
+        return politica_.aciona(nivel);
+    }
 };
 
 int main() {

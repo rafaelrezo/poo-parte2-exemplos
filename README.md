@@ -58,3 +58,6 @@ virtual ativado):
 
 ./dispositivo 300 1000
 streamlit run painel.py
+
+Na pasta `05-strategy`, compare `sem_strategy.cpp` e `sem_strategy.py` com
+`strategy.cpp` e `strategy.py`: mesmas regras de alarme, antes e depois do padrão.
