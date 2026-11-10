@@ -60,4 +60,5 @@ virtual ativado):
 streamlit run painel.py
 
 Na pasta `05-strategy`, compare `sem_strategy.cpp` e `sem_strategy.py` com
-`strategy.cpp` e `strategy.py`: mesmas regras de alarme, antes e depois do padrão.
+`strategy.cpp` e `strategy.py`: os mesmos filtros de sinal, antes e depois do padrão.
+`media_exponencial.py` acrescenta um filtro sem modificar `strategy.py`.
