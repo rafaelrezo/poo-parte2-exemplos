@@ -19,9 +19,9 @@ class MediaExponencial(FiltroSinal):
 
 
 def testar_filtro_isolado():
-    # Arrange: o filtro sozinho, sem canal, sem arquivo, sem planta
+    # Prepara: o filtro sozinho, sem canal e sem arquivo
     filtro = MediaExponencial(0.5)
-    # Act + Assert: 40 -> 40; depois 0,5*60 + 0,5*40 = 50; depois 0,5*60 + 0,5*50 = 55
+    # Executa e confere: 40 -> 40; depois 0,5*60 + 0,5*40 = 50; depois 0,5*60 + 0,5*50 = 55
     assert filtro.filtrar(40.0) == 40.0
     assert filtro.filtrar(60.0) == 50.0
     assert filtro.filtrar(60.0) == 55.0
