@@ -1,41 +1,39 @@
-from observer import Aviso, Cozinha, Fila, Observador, PrepararPedido  # observer.py não é modificado
+from observer import Cozinha, Observador, Painel, PedidoPronto  # observer.py não é modificado
 
 
 class Contador(Observador):
-    """Observador novo: o gerente quer saber quantos lanches saíram."""
+    """Observador novo: o gerente quer saber quantos pedidos ficaram prontos."""
 
     def __init__(self):
-        self.entregues = 0
+        self.prontos = 0
 
-    def receber(self, aviso):
-        if aviso.pronto:
-            self.entregues += 1
+    def receber(self, evento):
+        self.prontos += 1
 
 
 def testar_contador_isolado():
     # Prepara: o observador sozinho, sem cozinha
     contador = Contador()
-    # Executa: entrega avisos fabricados no próprio teste
-    contador.receber(Aviso(1, "X-burguer", True))
-    contador.receber(Aviso(2, "X-salada", False))
-    contador.receber(Aviso(3, "misto quente", True))
-    # Confere: só os prontos contam
-    assert contador.entregues == 2
+    # Executa: entrega eventos criados no próprio teste
+    contador.receber(PedidoPronto(1))
+    contador.receber(PedidoPronto(2))
+    # Confere: um a mais por evento recebido
+    assert contador.prontos == 2
     print("teste do contador isolado: ok")
 
 
 def main():
     testar_contador_isolado()
+    painel = Painel()
     contador = Contador()
-    cozinha = Cozinha(5)
-    cozinha.assinar(contador)  # nenhum painel nem app: só o contador
+    cozinha = Cozinha()  # a mesma Cozinha de antes
+    cozinha.assinar(painel)
+    cozinha.assinar(contador)  # uma inscrição a mais; nenhuma linha da cozinha mudou
 
-    fila = Fila()
-    fila.receber(PrepararPedido(cozinha, 1, "X-burguer"))
-    fila.receber(PrepararPedido(cozinha, 1, "X-burguer"))  # reenvio
-    fila.receber(PrepararPedido(cozinha, 2, "misto quente"))
-    fila.atender_todos()
-    print(f"comandas atendidas: {len(fila.historico)}, lanches entregues: {contador.entregues}")
+    cozinha.concluir(1)
+    cozinha.concluir(2)
+    cozinha.concluir(2)  # botão apertado de novo
+    print(f"contador do gerente: {contador.prontos} pedidos prontos")
 
 
 if __name__ == "__main__":

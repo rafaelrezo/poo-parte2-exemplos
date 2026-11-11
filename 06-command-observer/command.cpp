@@ -1,75 +1,66 @@
 #include <iostream>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
-// Receptor: sabe preparar e decide se aceita cada pedido
+// Receptores: sabem fazer o trabalho; não sabem que existe uma fila
 class Cozinha {
 public:
-    explicit Cozinha(int paes) : paes_(paes) {}
-
-    std::string preparar(int numero, const std::string& item) {
-        if (preparados_.count(numero) > 0) {
-            return "repetido, ignorado";
-        }
-        if (paes_ == 0) {
-            return "recusado, acabou o pao";
-        }
-        --paes_;
-        preparados_.insert(numero);
-        return "pronto (" + item + ")";
+    void preparar_lanche(int numero, const std::string& lanche) {
+        std::cout << "  cozinha: " << lanche << " (pedido " << numero << ")\n";
     }
-
-    std::string repor_paes(int quantidade) {
-        paes_ += quantidade;
-        return "estoque com " + std::to_string(paes_) + " paes";
-    }
-
-private:
-    int paes_;
-    std::set<int> preparados_;
 };
 
-// Comando: a solicitação como objeto, com uma única operação para executá-la
+class Bar {
+public:
+    void preparar_bebida(int numero, const std::string& bebida) {
+        std::cout << "  bar: " << bebida << " (pedido " << numero << ")\n";
+    }
+};
+
+// Comando: o contrato comum de toda solicitação
 class Comando {
 public:
     virtual ~Comando() = default;
+    virtual void executar() = 0;
     virtual std::string descrever() const = 0;
-    virtual std::string executar() const = 0;
 };
 
 // Comandos concretos: guardam o receptor e os dados da solicitação
-class PrepararPedido : public Comando {
+class PrepararLanche : public Comando {
 public:
-    PrepararPedido(Cozinha& cozinha, int numero, std::string item)
-        : cozinha_(cozinha), numero_(numero), item_(std::move(item)) {}
+    PrepararLanche(Cozinha& cozinha, int numero, std::string lanche)
+        : cozinha_(cozinha), numero_(numero), lanche_(std::move(lanche)) {}
 
-    std::string descrever() const override { return "pedido " + std::to_string(numero_); }
-    std::string executar() const override { return cozinha_.preparar(numero_, item_); }
+    void executar() override { cozinha_.preparar_lanche(numero_, lanche_); }
+    std::string descrever() const override {
+        return "pedido " + std::to_string(numero_) + ": " + lanche_ + " na cozinha";
+    }
 
 private:
     Cozinha& cozinha_;
     int numero_;
-    std::string item_;
+    std::string lanche_;
 };
 
-class ReporPaes : public Comando {
+class PrepararBebida : public Comando {
 public:
-    ReporPaes(Cozinha& cozinha, int quantidade) : cozinha_(cozinha), quantidade_(quantidade) {}
+    PrepararBebida(Bar& bar, int numero, std::string bebida)
+        : bar_(bar), numero_(numero), bebida_(std::move(bebida)) {}
 
+    void executar() override { bar_.preparar_bebida(numero_, bebida_); }
     std::string descrever() const override {
-        return "repor " + std::to_string(quantidade_) + " paes";
+        return "pedido " + std::to_string(numero_) + ": " + bebida_ + " no bar";
     }
-    std::string executar() const override { return cozinha_.repor_paes(quantidade_); }
 
 private:
-    Cozinha& cozinha_;
-    int quantidade_;
+    Bar& bar_;
+    int numero_;
+    std::string bebida_;
 };
 
-// Invocador: guarda as comandas e as executa na ordem, sem conhecer a cozinha
+// Invocador: guarda as comandas e decide quando executá-las; só conhece Comando
 class Fila {
 public:
     void receber(std::unique_ptr<Comando> comando) { pendentes_.push_back(std::move(comando)); }
@@ -78,7 +69,8 @@ public:
 
     void atender_todos() {
         for (const auto& comando : pendentes_) {
-            historico_.push_back(comando->descrever() + ": " + comando->executar());
+            comando->executar();
+            historico_.push_back(comando->descrever());
         }
         pendentes_.clear();
     }
@@ -91,20 +83,21 @@ private:
 };
 
 int main() {
-    Cozinha cozinha{2};
+    Cozinha cozinha;
+    Bar bar;
     Fila fila;
 
-    // Clientes: caixa e aplicativo criam comandas e voltam a atender
-    fila.receber(std::make_unique<PrepararPedido>(cozinha, 1, "X-burguer"));
-    fila.receber(std::make_unique<PrepararPedido>(cozinha, 2, "misto quente"));
-    fila.receber(std::make_unique<PrepararPedido>(cozinha, 2, "misto quente"));  // reenvio
-    fila.receber(std::make_unique<PrepararPedido>(cozinha, 3, "X-salada"));
-    fila.receber(std::make_unique<ReporPaes>(cozinha, 10));
-    fila.receber(std::make_unique<PrepararPedido>(cozinha, 4, "X-burguer"));
-    std::cout << "na fila: " << fila.pendentes() << " comandas, nenhuma executada\n";
+    // Cliente: o caixa cria cada comanda, ligada ao seu receptor, e a entrega à fila
+    fila.receber(std::make_unique<PrepararLanche>(cozinha, 1, "X-burguer"));
+    fila.receber(std::make_unique<PrepararBebida>(bar, 2, "suco de laranja"));
+    fila.receber(std::make_unique<PrepararLanche>(cozinha, 3, "misto quente"));
+    std::cout << "caixa: " << fila.pendentes() << " pedidos registrados, nenhum preparado ainda\n";
 
+    // Mais tarde, quando há quem prepare, a fila executa as comandas na ordem
     fila.atender_todos();
+
+    std::cout << "historico da fila:\n";
     for (const auto& linha : fila.historico()) {
-        std::cout << linha << '\n';
+        std::cout << "  " << linha << '\n';
     }
 }

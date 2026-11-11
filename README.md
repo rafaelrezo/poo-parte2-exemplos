@@ -63,8 +63,9 @@ Na pasta `05-strategy`, compare `sem_strategy.cpp` e `sem_strategy.py` com
 `strategy.cpp` e `strategy.py`: o mesmo cálculo de frete, antes e depois do padrão.
 `motoboy.py` acrescenta uma modalidade sem modificar `strategy.py`.
 
-Na pasta `06-command-observer`, `sem_padroes.cpp` e `sem_padroes.py` mostram a
-lanchonete em que cada parte chama a seguinte diretamente. `command.*` transforma
-o pedido em objeto (Command); `observer.*` acrescenta os avisos da cozinha
-(Observer) sem mudar as comandas nem a fila. `contador.py` inscreve um observador
-novo sem modificar `observer.py`.
+Na pasta `06-command-observer`, cada padrão tem seu par antes/depois:
+`sem_command.*` → `command.*` (o caixa entrega comandas a uma fila, que atende
+cozinha e bar sem conhecê-los) e `sem_observer.*` → `observer.*` (a cozinha avisa
+painel e aplicativo sem conhecê-los). `sobremesa.py` acrescenta um setor sem
+modificar `command.py`; `contador.py` inscreve um observador novo sem modificar
+`observer.py`.

@@ -13,31 +13,18 @@ class Cozinha:
         self._painel = painel
         self._app = app
 
-    def preparar(self, numero, item):
-        print(f"  cozinha: preparou {item}")
+    def concluir(self, numero):
+        print(f"cozinha: pedido {numero} pronto")
         self._painel.mostrar_pronto(numero)
         self._app.avisar_cliente(numero)
-
-
-class Caixa:
-    def __init__(self, cozinha):
-        self._cozinha = cozinha
-        self._numero = 0
-
-    def vender(self, item):
-        self._numero += 1
-        print(f"caixa: pedido {self._numero}, {item}")
-        self._cozinha.preparar(self._numero, item)
-        print("caixa: pronto para o proximo cliente")
 
 
 def main():
     painel = Painel()
     app = Aplicativo()
     cozinha = Cozinha(painel, app)
-    caixa = Caixa(cozinha)
-    caixa.vender("X-burguer")
-    caixa.vender("misto quente")
+    cozinha.concluir(1)
+    cozinha.concluir(2)
 
 
 if __name__ == "__main__":
