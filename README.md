@@ -22,7 +22,7 @@ a biblioteca padrão; a exceção são os programas C++ da pasta
 04-dispositivo-painel que escrevem JSON, que usam nlohmann/json. Os comandos e
 as saídas comentadas estão nas aulas.
 
-A pasta 09-testes já contém as dependências das aulas 04 e 08. Nessa pasta:
+A pasta 08-testes já contém as dependências das aulas 04 e 07. Nessa pasta:
 
 g++ -std=c++17 -Wall -Wextra -Werror -pedantic teste_medicao.cpp -o teste_medicao
 ./teste_medicao
@@ -31,9 +31,9 @@ python3 test_referencia.py
 python3 test_integracao.py
 
 Para o painel e test_painel.py, use ambiente virtual e instale requirements.txt
-na raiz deste pacote. Depois: python3 test_painel.py (na pasta 09-testes).
+na raiz deste pacote. Depois: python3 test_painel.py (na pasta 08-testes).
 AppTest não inicia um servidor de visualização. Para abrir a tela voluntariamente,
-na pasta 08-repository: python3 -m streamlit run painel.py.
+na pasta 07-repository: python3 -m streamlit run painel.py.
 A demonstração repository.py usa banco temporário e não deixa um banco na pasta.
 O teste test_painel.py prepara seus próprios dados e verifica a tela.
 
@@ -62,3 +62,9 @@ streamlit run painel.py
 Na pasta `05-strategy`, compare `sem_strategy.cpp` e `sem_strategy.py` com
 `strategy.cpp` e `strategy.py`: o mesmo cálculo de frete, antes e depois do padrão.
 `motoboy.py` acrescenta uma modalidade sem modificar `strategy.py`.
+
+Na pasta `06-command-observer`, `sem_padroes.cpp` e `sem_padroes.py` mostram a
+lanchonete em que cada parte chama a seguinte diretamente. `command.*` transforma
+o pedido em objeto (Command); `observer.*` acrescenta os avisos da cozinha
+(Observer) sem mudar as comandas nem a fila. `contador.py` inscreve um observador
+novo sem modificar `observer.py`.
