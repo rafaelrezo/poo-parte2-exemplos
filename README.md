@@ -22,7 +22,7 @@ a biblioteca padrão; a exceção são os programas C++ da pasta
 04-dispositivo-painel que escrevem JSON, que usam nlohmann/json. Os comandos e
 as saídas comentadas estão nas aulas.
 
-A pasta 08-testes já contém as dependências das aulas 04 e 07. Nessa pasta:
+A pasta 09-testes já contém as dependências das aulas 04 e 08. Nessa pasta:
 
 g++ -std=c++17 -Wall -Wextra -Werror -pedantic teste_medicao.cpp -o teste_medicao
 ./teste_medicao
@@ -31,9 +31,9 @@ python3 test_referencia.py
 python3 test_integracao.py
 
 Para o painel e test_painel.py, use ambiente virtual e instale requirements.txt
-na raiz deste pacote. Depois: python3 test_painel.py (na pasta 08-testes).
+na raiz deste pacote. Depois: python3 test_painel.py (na pasta 09-testes).
 AppTest não inicia um servidor de visualização. Para abrir a tela voluntariamente,
-na pasta 07-repository: python3 -m streamlit run painel.py.
+na pasta 08-repository: python3 -m streamlit run painel.py.
 A demonstração repository.py usa banco temporário e não deixa um banco na pasta.
 O teste test_painel.py prepara seus próprios dados e verifica a tela.
 
@@ -42,8 +42,8 @@ Na pasta 03-processos, os programas trocam dados por arquivos de texto
 execução e as saídas esperadas estão na aula 03.
 
 A consulta TCP demonstra enquadramento por bytes, sem conexão ou servidor.
-Fora da pasta 03-processos, os programas que escrevem em disco usam diretórios
-temporários na demonstração.
+Fora das pastas 03-processos e 07-banco-de-dados, os programas que escrevem em
+disco usam diretórios temporários ou bancos em memória na demonstração.
 
 A pasta 04-dispositivo-painel acompanha o guia prático da aula 04. Cada
 subpasta passo-N contém o estado do projeto ao final daquele passo, para
@@ -69,3 +69,16 @@ cozinha e bar sem conhecê-los) e `sem_observer.*` → `observer.*` (a cozinha a
 painel e aplicativo sem conhecê-los). `sobremesa.py` acrescenta um setor sem
 modificar `command.py`; `contador.py` inscreve um observador novo sem modificar
 `observer.py`.
+
+Na pasta `07-banco-de-dados`, os programas seguem o percurso da aula 07:
+`pedidos_lista.py` (os pedidos somem ao terminar) → `pedidos_json.py` (persiste,
+mas duplica ao executar de novo) → `pedidos_sqlite.py` (chave primária, consultas
+e parâmetros `?`) → `transacao.py` (tudo ou nada). Execute os dois do meio duas
+vezes. Eles criam `pedidos.json` e `lanchonete.db` na própria pasta; apague esses
+arquivos para recomeçar.
+
+Na pasta `08-repository`, compare `sem_repositorio.py` com `repositorio.py` e
+`repositorio.cpp`: o caixa e o relatório da lanchonete antes e depois do padrão.
+`teste_repositorio.py` testa as duas implementações com o mesmo teste de contrato
+e o caixa sem banco, sem modificar `repositorio.py`. `repository.py` e `painel.py`
+são o histórico de aquisições do trabalho, usados também na pasta `09-testes`.

@@ -9,3 +9,5 @@ __pycache__/
 04-dispositivo-painel/*/dispositivo
 04-dispositivo-painel/*/serie_nivel.json
 04-dispositivo-painel/*/serie_nivel.json.tmp
+07-banco-de-dados/pedidos.json
+08-repository/repositorio
