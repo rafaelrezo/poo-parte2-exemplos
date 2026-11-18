@@ -2,12 +2,12 @@ import subprocess
 import unittest
 from pathlib import Path
 
-from contrato import interpretar
+from planta.contrato import interpretar
 
 
 class TestIntegracao(unittest.TestCase):
     def test_produtor_e_consumidor(self):
-        executavel = Path(__file__).resolve().parent / "produtor_fixture"
+        executavel = Path(__file__).resolve().parents[2] / "build/produtor_fixture"
         processo = subprocess.run([str(executavel), "48.5"],
                                    capture_output=True, text=True, timeout=5)
         self.assertEqual(processo.returncode, 0, processo.stderr)
@@ -16,7 +16,7 @@ class TestIntegracao(unittest.TestCase):
         self.assertEqual(aquisicao.nivel, 48.5)
 
     def test_produtor_recusa_numero_invalido(self):
-        executavel = Path(__file__).resolve().parent / "produtor_fixture"
+        executavel = Path(__file__).resolve().parents[2] / "build/produtor_fixture"
         processo = subprocess.run([str(executavel), "nan"],
                                    capture_output=True, text=True, timeout=5)
         self.assertNotEqual(processo.returncode, 0)

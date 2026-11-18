@@ -5,12 +5,13 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from streamlit.testing.v1 import AppTest
-from repository import Aquisicao, HistoricoSQLite
+from planta.modelo import Aquisicao
+from planta.repository import HistoricoSQLite
 
 
 class TestPainel(unittest.TestCase):
     def test_banco_ausente_e_tabela(self):
-        aplicativo = Path(__file__).resolve().parent / "painel.py"
+        aplicativo = Path(__file__).resolve().parents[2] / "src/planta/painel.py"
         anterior = Path.cwd()
         with TemporaryDirectory() as pasta:
             try:

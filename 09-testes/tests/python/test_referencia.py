@@ -3,7 +3,9 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from repository import Aquisicao, HistoricoSQLite, exportar_csv
+from planta.exportacao import exportar_csv
+from planta.modelo import Aquisicao
+from planta.repository import HistoricoSQLite
 
 
 class TestHistorico(unittest.TestCase):

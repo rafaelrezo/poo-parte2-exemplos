@@ -1,0 +1,32 @@
+name: Testes dos exemplos
+
+on:
+  push:
+    paths:
+      - '09-testes/**'
+      - '.github/workflows/testes-exemplos.yml'
+      - 'requirements.txt'
+  pull_request:
+    paths:
+      - '09-testes/**'
+      - '.github/workflows/testes-exemplos.yml'
+      - 'requirements.txt'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código do commit
+        uses: actions/checkout@v6
+      - name: Preparar Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Instalar dependência da tela
+        run: python -m pip install -r requirements.txt
+      - name: Executar os mesmos testes locais
+        run: make -C 09-testes test

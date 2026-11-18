@@ -5,7 +5,8 @@ from pathlib import Path
 
 import streamlit as st
 
-from repository import HistoricoSQLite, exportar_csv
+from planta.exportacao import exportar_csv
+from planta.repository import HistoricoSQLite
 
 
 def main():

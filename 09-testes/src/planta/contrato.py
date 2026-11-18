@@ -1,9 +1,7 @@
 import json
 import math
-import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -70,39 +68,3 @@ def interpretar(texto: str) -> AquisicaoNivel:
     sessao, ciclo, instante = validar_envelope(documento)                 # 2. validação
     nivel = validar_nivel(documento)
     return AquisicaoNivel(sessao, ciclo, instante, nivel)                 # 3. objeto do domínio
-
-
-def documento_exemplo(**mudancas) -> str:
-    leitura = {"tag": "LT-01", "tipo": "nivel", "valor": 48.5,
-               "unidade": "%", "status": "operando"}
-    leitura.update(mudancas)
-    documento = {"versao": 1, "sessao": "ensaio", "ciclo": 12,
-                 "timestamp": "2026-10-21T18:00:00Z", "leituras": [leitura]}
-    return json.dumps(documento)
-
-
-def main() -> None:
-    if len(sys.argv) == 2:  # interpretar um arquivo, como dados/planta.json
-        lida = interpretar(Path(sys.argv[1]).read_text(encoding="utf-8"))
-        print(f"ACEITO: ciclo {lida.ciclo}, {lida.instante:%H:%M:%S} UTC, nível {lida.nivel} %")
-        return
-    casos = [
-        ("válido", documento_exemplo()),
-        ("texto no lugar do número", documento_exemplo(valor="alto")),
-        ("número entre aspas", documento_exemplo(valor="48.5")),
-        ("booleano", documento_exemplo(valor=True)),
-        ("NaN", documento_exemplo(valor=float("nan"))),
-        ("unidade errada", documento_exemplo(valor=0.485, unidade="fracao")),
-        ("fora da faixa", documento_exemplo(valor=185.0)),
-    ]
-    for nome, texto in casos:
-        try:
-            aquisicao = interpretar(texto)
-            print(f"{nome:25} -> ACEITO: {aquisicao.sessao}/{aquisicao.ciclo}, "
-                  f"nível {aquisicao.nivel} %")
-        except ValueError as erro:
-            print(f"{nome:25} -> RECUSADO: {erro}")
-
-
-if __name__ == "__main__":
-    main()

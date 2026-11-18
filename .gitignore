@@ -5,6 +5,7 @@ __pycache__/
 03-processos/controle_nivel
 03-processos/cliente_bomba
 .venv/
+09-testes/build/
 04-dispositivo-painel/*/sorteio
 04-dispositivo-painel/*/dispositivo
 04-dispositivo-painel/*/serie_nivel.json
