@@ -59,26 +59,112 @@ virtual ativado):
 ./dispositivo 300 1000
 streamlit run painel.py
 
-Na pasta `05-strategy`, compare `sem_strategy.cpp` e `sem_strategy.py` com
-`strategy.cpp` e `strategy.py`: o mesmo cálculo de frete, antes e depois do padrão.
-`motoboy.py` acrescenta uma modalidade sem modificar `strategy.py`.
+## Padrões como pequenos projetos
 
-Na pasta `06-command-observer`, cada padrão tem seu par antes/depois:
-`sem_command.*` → `command.*` (o caixa entrega comandas a uma fila, que atende
-cozinha e bar sem conhecê-los) e `sem_observer.*` → `observer.*` (a cozinha avisa
-painel e aplicativo sem conhecê-los). `sobremesa.py` acrescenta um setor sem
-modificar `command.py`; `contador.py` inscreve um observador novo sem modificar
-`observer.py`.
+As versões `sem_*` mantêm o problema visível em um arquivo. As versões principais
+com Strategy, Command, Observer e Repository agora são projetos independentes.
+Em C++, `lib/` contém contratos e classes em cabeçalhos curtos; `main.cpp` apenas
+monta e usa os objetos. Em Python, `lib/` é um pacote; `main.py` faz a montagem.
+As extensões Python ficam em `extensions/`. Os arquivos únicos antigos com o
+padrão permanecem para links anteriores, mas o percurso principal é o projeto.
 
-Na pasta `07-banco-de-dados`, os programas seguem o percurso da aula 07:
-`pedidos_lista.py` (os pedidos somem ao terminar) → `pedidos_json.py` (persiste,
-mas duplica ao executar de novo) → `pedidos_sqlite.py` (chave primária, consultas
-e parâmetros `?`) → `transacao.py` (tudo ou nada). Execute os dois do meio duas
-vezes. Eles criam `pedidos.json` e `lanchonete.db` na própria pasta; apague esses
-arquivos para recomeçar.
+| Padrão | Projeto C++ | Projeto Python | O cliente conhece |
+|---|---|---|---|
+| Strategy | `05-strategy/organizado-cpp` | `05-strategy/organizado-python` | `Frete`, não a modalidade concreta |
+| Command | `06-command-observer/command-cpp` | `06-command-observer/command-python` | `Comando`, não cozinha ou bar |
+| Observer | `06-command-observer/observer-cpp` | `06-command-observer/observer-python` | `Observador`, não painel ou aplicativo |
+| Repository | `08-repository/organizado-cpp` | `08-repository/organizado-python` | `RepositorioPedidos`, não memória ou SQLite |
 
-Na pasta `08-repository`, compare `sem_repositorio.py` com `repositorio.py` e
-`repositorio.cpp`: o caixa e o relatório da lanchonete antes e depois do padrão.
-`teste_repositorio.py` testa as duas implementações com o mesmo teste de contrato
-e o caixa sem banco, sem modificar `repositorio.py`. `repository.py` e `painel.py`
-são o histórico de aquisições do trabalho, usados também na pasta `09-testes`.
+Estrutura que se repete nos exemplos organizados:
+
+```text
+organizado-cpp/                 organizado-python/
+├── lib/  (contrato e classes)  ├── lib/  (contrato e módulos)
+└── main.cpp  (montagem)        ├── main.py  (montagem)
+                                └── extensions/ ou test_contrato.py
+```
+
+A pasta sozinha não desacopla o código: veja os imports de `Pedido`, `Fila`,
+`Cozinha`, `Caixa` e `Relatorio`. Eles dependem do contrato; `main` escolhe
+implementações concretas e liga os objetos. As demonstrações são independentes
+do projeto avaliado e não contêm soluções de suas extensões.
+
+### 05. Strategy
+
+Compare `05-strategy/sem_strategy.cpp` e `sem_strategy.py` com os projetos
+`organizado-cpp` e `organizado-python`. Em `lib/`, o contrato `Frete`, as
+modalidades e `Pedido` ficam em arquivos distintos. A montagem escolhe a
+modalidade fora do pedido. Execute a partir da raiz deste repositório:
+
+```bash
+cd 05-strategy/organizado-cpp
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic main.cpp -o strategy
+./strategy
+cd ../organizado-python
+python3 main.py
+python3 -m extensions.motoboy
+cd ../..
+```
+
+`extensions/motoboy.py` acrescenta uma modalidade sem editar `lib/pedido.py`.
+
+### 06. Command e Observer
+
+Command e Observer ficam em **projetos diferentes** dentro de
+`06-command-observer/`. Compare antes cada `sem_command.*` ou
+`sem_observer.*`. A fila importa somente `Comando`; a cozinha importa somente
+`Observador`. Execute, em cada pasta, o `main` da linguagem:
+
+```bash
+cd 06-command-observer/command-cpp
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic main.cpp -o command
+./command
+cd ../command-python
+python3 main.py
+python3 -m extensions.sobremesa
+cd ../observer-cpp
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic main.cpp -o observer
+./observer
+cd ../observer-python
+python3 main.py
+python3 -m extensions.contador
+cd ../..
+```
+
+`sobremesa` acrescenta receptor e comando sem alterar a fila; `contador`
+acrescenta um observador sem alterar a cozinha.
+
+### 07. Banco de dados
+
+Na pasta `07-banco-de-dados`, os programas seguem lista → JSON → SQLite →
+transação. `pedidos_json.py` e `pedidos_sqlite.py` criam arquivos na própria
+pasta; execute duas vezes para ver a diferença e apague os arquivos para
+recomeçar.
+
+### 08. Repository
+
+Compare `08-repository/sem_repositorio.py` com os projetos
+`organizado-cpp` e `organizado-python`. `lib/` separa entidade, contrato,
+armazenamentos e clientes. Em Python, o mesmo teste de contrato roda com
+memória e SQLite; `Caixa` é testado sem banco:
+
+```bash
+cd 08-repository/organizado-cpp
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic main.cpp -o repository
+./repository
+cd ../organizado-python
+python3 main.py
+python3 test_contrato.py
+cd ../..
+```
+
+`08-repository/repository.py` e `painel.py` são outra demonstração, do histórico
+de aquisições do trabalho, usada também em `09-testes`. Os arquivos únicos
+`repositorio.cpp`, `repositorio.py` e `teste_repositorio.py` continuam disponíveis
+para links anteriores.
+
+Em todos os projetos, execute os comandos **dentro da pasta indicada**.
+Os programas C++ organizados usam cabeçalhos didáticos em `lib/` e não exigem
+instalação de uma biblioteca externa. Para testar o efeito do desacoplamento,
+identifique qual arquivo mudaria ao acrescentar uma implementação concreta
+e quais clientes permaneceriam iguais.
